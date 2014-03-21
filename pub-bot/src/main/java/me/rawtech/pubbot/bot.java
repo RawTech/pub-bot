@@ -1,4 +1,4 @@
-package me.rawtech.ircbot;
+package me.rawtech.pubbot;
 
 import org.pircbotx.PircBotX;
 import org.pircbotx.User;
