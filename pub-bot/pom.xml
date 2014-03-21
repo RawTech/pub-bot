@@ -42,7 +42,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>me.rawtech.pubbot.bot</mainClass>
+                            <mainClass>me.rawtech.pubbot.PubBot</mainClass>
                             <packageName>me.rawtech.pubbot</packageName>
                         </manifest>
                     </archive>
