@@ -3,6 +3,7 @@ package me.rawtech.pubbot;
 import org.pircbotx.PircBotX;
 import org.pircbotx.hooks.types.GenericMessageEvent;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,11 +13,15 @@ public class Kernel {
     private String time;
     private PircBotX bot;
     private HashMap<String, String> orderList;
+    private ArrayList<String> fatMesses;
 
     public Kernel(String pubName, String time) {
         this.orderList = new HashMap<>();
         this.pubName = pubName;
         this.time = time;
+
+        this.fatMesses = new ArrayList<>();
+        this.fatMesses.add("lewis");
 
         this.bot = new PircBotX();
         this.bot.setName("pub-bot");
@@ -66,10 +71,16 @@ public class Kernel {
     }
 
     public void addOrder(final GenericMessageEvent event, String order) {
+        String suffix = "";
+
+        if (this.fatMesses.contains(event.getUser().getNick())) {
+            suffix = " you fat mess";
+        }
+
         if (this.hasOrder(event.getUser().getNick())) {
-            event.respond("Your order has been updated.");
+            event.respond("Your order has been updated" + suffix + ".");
         } else {
-            event.respond("Your order has been added!.");
+            event.respond("Your order has been added" + suffix + ".");
         }
 
         this.orderList.put(event.getUser().getNick(), order);
