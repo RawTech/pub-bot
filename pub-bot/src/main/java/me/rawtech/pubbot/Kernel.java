@@ -20,7 +20,7 @@ public class Kernel {
 
         this.bot = new PircBotX();
         this.bot.setName("pub-bot");
-        this.bot.getListenerManager().addListener(new MessageListener(this));
+        this.bot.getListenerManager().addListener(new MessageListener());
 
         try {
             this.bot.connect("irc.ebuyer.com");

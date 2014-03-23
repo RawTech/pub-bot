@@ -5,19 +5,13 @@ import org.pircbotx.hooks.types.GenericMessageEvent;
 
 public class MessageListener extends ListenerAdapter {
 
-    private Kernel kernel;
-
-    public MessageListener(Kernel kernel) {
-        this.kernel = kernel;
-    }
-
     @Override
     public void onGenericMessage(final GenericMessageEvent event) throws Exception {
         String message = event.getMessage();
         String[] parts = message.split(" ");
         String root = parts[0];
 
-        if (root.equals("!pubbot") || root.equals("!pub-bot")) {
+        if (root.equals("!pubbot") || root.equals("!pub-bot") || root.equals("!pub")) {
             if (parts.length == 1) {
                 this.showHelp(event);
             } else {
@@ -47,50 +41,54 @@ public class MessageListener extends ListenerAdapter {
                     case "remove":
                         this.remove(event);
                         break;
+                    case "menu":
+                        this.showMenu(event);
+                        break;
                 }
             }
         }
     }
 
+    private void showMenu(final GenericMessageEvent event) {
+        event.respond("You'll probably find the menu here:");
+        event.respond("https://wrenkitchens.atlassian.net/wiki/display/DEV/Pub");
+    }
+
     private void count(final GenericMessageEvent event) {
-        event.respond("Currently got "+this.kernel.getNumOrders()+" orders.");
+        event.respond("Currently got " + PubBot.kernel.getNumOrders() + " orders.");
     }
 
     private void remove(final GenericMessageEvent event) {
-        if (this.kernel.hasOrder(event.getUser().getNick())) {
-            this.kernel.cancelOrder(event.getUser().getNick());
-            event.respond("Ive cancelled your order..");
+        if (PubBot.kernel.hasOrder(event.getUser().getNick())) {
+            PubBot.kernel.cancelOrder(event.getUser().getNick());
+            event.respond("I've cancelled your order.");
         } else {
             event.respond("You haven't made an order.");
         }
     }
 
     private void showOrder(final GenericMessageEvent event) {
-        if (this.kernel.hasOrder(event.getUser().getNick())) {
-            event.respond("Ive currently got down a '"+this.kernel.getOrder(event.getUser().getNick())+"' for you.");
+        if (PubBot.kernel.hasOrder(event.getUser().getNick())) {
+            event.respond("Ive currently got down a '" + PubBot.kernel.getOrder(event.getUser().getNick()) + "' for you.");
         } else {
             event.respond("I currently don't have anything ordered for you.");
         }
     }
 
     private void sendInfo(final GenericMessageEvent event) {
-        event.respond("We'll be going to " + this.kernel.getPubName() + " at " + this.kernel.getTime() + ".");
+        event.respond("We'll be going to " + PubBot.kernel.getPubName() + " at " + PubBot.kernel.getTime() + ".");
     }
 
     private void addOrder(final GenericMessageEvent event, String order) {
         if (order.equals("")) {
             event.respond("You must tell me your order you dummy!");
         } else {
-            this.kernel.addOrder(event, order.trim());
+            PubBot.kernel.addOrder(event, order.trim());
         }
     }
 
     private void showHelp(final GenericMessageEvent event) {
-        event.respond("!pubbot help");
-        event.respond("!pubbot info");
-        event.respond("!pubbot count");
-        event.respond("!pubbot myorder");
-        event.respond("!pubbot remove");
-        event.respond("!pubbot order <your order>");
+        event.respond("You can use the following commands:");
+        event.respond("[info], [count], [myorder], [remove], [menu], [order <your order>]");
     }
 }
