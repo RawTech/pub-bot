@@ -22,6 +22,7 @@ public class Kernel {
 
         this.fatMesses = new ArrayList<>();
         this.fatMesses.add("lewis");
+        this.fatMesses.add("Lewbo");
 
         this.bot = new PircBotX();
         this.bot.setName("pub-bot");
