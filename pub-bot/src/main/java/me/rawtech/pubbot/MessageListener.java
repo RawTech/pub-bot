@@ -1,7 +1,14 @@
 package me.rawtech.pubbot;
 
+import org.pircbotx.User;
 import org.pircbotx.hooks.ListenerAdapter;
+import org.pircbotx.hooks.events.MessageEvent;
+import org.pircbotx.hooks.events.PrivateMessageEvent;
 import org.pircbotx.hooks.types.GenericMessageEvent;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class MessageListener extends ListenerAdapter {
 
@@ -11,7 +18,14 @@ public class MessageListener extends ListenerAdapter {
         String[] parts = message.split(" ");
         String root = parts[0];
 
-        if (root.equals("!pubbot") || root.equals("!pub-bot") || root.equals("!pub")) {
+        List<String> respondTo = new ArrayList<>();
+        respondTo.add("!pubbot");
+        respondTo.add("!pub-bot");
+        respondTo.add("!pub");
+        respondTo.add("!simon");
+        respondTo.add("!josh");
+
+        if (respondTo.contains(root)) {
             if (parts.length == 1) {
                 this.showHelp(event);
             } else {
@@ -39,12 +53,80 @@ public class MessageListener extends ListenerAdapter {
                         this.count(event);
                         break;
                     case "remove":
+                    case "wimpout":
                         this.remove(event);
                         break;
                     case "menu":
                         this.showMenu(event);
                         break;
+                    case "song":
+                    case "sing":
+                        if (root.equals("!simon")) {
+                            switch (new Random().nextInt(1)) {
+                                case 0:
+                                    event.respond("What's in your bag Simon, tell us what's in your bag, you bastard!");
+                                    event.respond("I've got a bag a chips, groovy hips and a Maddy Mccan in a tin!");
+                            }
+                        } else if (root.equals("!josh")) {
+                            switch (new Random().nextInt(1)) {
+                                case 0:
+                                    event.respond("What's in your burger Josh? Tell us what's in your burger, you bastard.");
+                                    event.respond("I've got a saveloy and a donna kebab and a piece of black pudding.");
+                            }
+                        }
+                        break;
+                    case "sudo":
+                        if (PubBot.kernel.isSudoer(event.getUser().getNick())) {
+                            this.handleSudo(event);
+                        }
+                        break;
                 }
+            }
+        }
+    }
+
+    private void handleSudo(final GenericMessageEvent event)
+    {
+        String message = event.getMessage();
+        String[] parts = message.split(" ");
+        String root    = parts[0];
+
+        if (parts.length < 3) {
+            event.respond("Not enough args.");
+        }
+
+        String targetUsername = parts[2];
+        String command = root + " ";
+        for (int i = 3; i < parts.length; i++) {
+            command+= parts[i] + " ";
+        }
+
+        User user = null;
+        try {
+            user = PubBot.kernel.getBot().getUser(targetUsername);
+        } catch (Exception e) {
+            event.respond(targetUsername + " not found.");
+            return;
+        }
+
+        if (user == null) {
+            event.respond(targetUsername + " not found.");
+            return;
+        }
+
+        GenericMessageEvent newEvent = null;
+
+        if (event instanceof PrivateMessageEvent) {
+            newEvent = new PrivateMessageEvent(PubBot.kernel.getBot(), user, command);
+        } else if (event instanceof MessageEvent) {
+            newEvent = new MessageEvent(PubBot.kernel.getBot(), ((MessageEvent) event).getChannel(), user, command);
+        }
+
+        if (newEvent != null) {
+            try {
+                this.onGenericMessage(newEvent);
+            } catch (Exception e) {
+                event.respond(e.getMessage());
             }
         }
     }

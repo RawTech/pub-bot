@@ -14,6 +14,7 @@ public class Kernel {
     private PircBotX bot;
     private HashMap<String, String> orderList;
     private ArrayList<String> fatMesses;
+    private ArrayList<String> sudoers;
 
     public Kernel(String pubName, String time) {
         this.orderList = new HashMap<>();
@@ -23,6 +24,9 @@ public class Kernel {
         this.fatMesses = new ArrayList<>();
         this.fatMesses.add("lewis");
         this.fatMesses.add("Lewbo");
+
+        this.sudoers = new ArrayList<>();
+        this.sudoers.add("luke");
 
         this.bot = new PircBotX();
         this.bot.setName("pub-bot");
@@ -44,6 +48,16 @@ public class Kernel {
         if (this.bot != null && this.bot.isConnected()) {
             this.bot.disconnect();
         }
+    }
+
+    public PircBotX getBot()
+    {
+        return this.bot;
+    }
+
+    public Boolean isSudoer(String username)
+    {
+        return this.sudoers.contains(username);
     }
 
     public void setPubName(String pubName) {
